@@ -81,9 +81,27 @@ The coordinate frame called ``base_link`` is rigidly attached to the
 mobile robot base. The ``base_link`` can be attached to the base in
 any arbitrary position or orienation; for every hardware platform
 there will be a different place on the base that provides an obvious
-point of reference. Note that REP 103 [1] specifies a preferred
+point of reference. Note that REP 103 [1]_ specifies a preferred
 orientation for frames.
 
+earth
+'''''
+
+The coordinate frame called ``earth`` is the origin of ECEF.
+
+This frame is designed to allow the interaction of multiple robots in different map frames.
+In the case of running with multiple maps simultaneously the ``map`` and ``odom`` and ``base_link`` frames will need to be customized for each robot.
+If running multiple robots and bridging data between them, the transform frame_ids can remain standard on each robot if the other robots_frame_ids are rewritten.
+
+If the ``map`` frame is globally referenced the publisher from ``earth`` to ``map`` can be a static transform publisher.
+Otherwise the ``earth`` to ``map`` transform will usually need to be computed by taking the estimate of the current global position and subtracting the current estimated pose in the map to get the estimated pose of the origin of the map.
+
+
+In case the ``map`` frame's absolute positon is unknown at the time of startup, it can remain detached until such time that the global position estimation can be adaquately evaluated.
+This will operate in the same way that a robot can operate in the ``odom`` frame before localization in the ``map`` frame is innitialized.
+
+TODO: add ECEF converters to geodesy:
+Converter methods: https://github.com/ethz-asl/asctec_mav_framework/blob/master/asctec_hl_gps/src/gps_conversion.cpp
 
 
 Relationship between Frames
@@ -94,7 +112,7 @@ in a robot system to each other. Therefore each coordinate frame has
 one parent coordinate frame, and any number of child coordinate
 frames. The frames described in this REP are attached as follows:
 
-``map`` --> ``odom`` --> ``base_link``
+``earth`` --> ``map`` --> ``odom`` --> ``base_link``
 
 The ``map`` frame is the parent of ``odom``, and ``odom`` is the
 parent of ``base_link``.  Although intuition would say that both
@@ -114,6 +132,11 @@ broadcast the transform from ``map`` to ``base_link``. Instead, it
 first receives the transform from ``odom`` to ``base_link``, and uses
 this information to broadcast the transform from ``map`` to ``odom``.
 
+The transform from ``earth`` to ``map`` is statically published and
+configured by the choice of map frame. If not specifically configured
+a fallback position is to use the initial position of the vehicle as
+the origin of the map frame.
+
 
 Exceptions
 ----------
@@ -122,18 +145,18 @@ The scope of potential robotics software is too broad to require all
 ROS software to follow the guidelines of this REP.  However, choosing
 different conventions should be well justified and well documented.
 
-
-
 Compliance
 ==========
 
-This REP depends on and is compliant with REP 103 [1].
+This REP depends on and is compliant with REP 103 [1]_.
 
 References
 ==========
 
 .. [1] REP 103, Standard Units of Measure and Coordinate Conventions
    (http://www.ros.org/reps/rep-0103.html)
+
+.. [2] Earth Centered, Earth Fixed Wikipedia article (https://en.wikipedia.org/wiki/ECEF)
 
 Copyright
 =========
