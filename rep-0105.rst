@@ -104,6 +104,7 @@ TODO: add ECEF converters to geodesy:
 Converter methods: https://github.com/ethz-asl/asctec_mav_framework/blob/master/asctec_hl_gps/src/gps_conversion.cpp
 
 
+
 Relationship between Frames
 ---------------------------
 
@@ -118,6 +119,19 @@ The ``map`` frame is the parent of ``odom``, and ``odom`` is the
 parent of ``base_link``.  Although intuition would say that both
 ``map`` and ``odom`` should be attached to ``base_link``, this is not
 allowed because each frame can only have one parent.
+
+
+Example of multi-robot tf graph
+-------------------------------
+
+.. figure:: rep-0105/coordinate_frames.png
+   :width: 260px
+   :alt: An image of a TurtleBot
+
+   An example multi robot coordinate tree.
+
+This is an example of a tf tree with two robots using different maps for localization and having a common frame ``earth``.
+
 
 
 Frame Authorities
